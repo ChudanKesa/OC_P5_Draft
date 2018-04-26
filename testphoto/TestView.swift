@@ -36,10 +36,21 @@ class TestView: UIView, UIImagePickerControllerDelegate, UINavigationControllerD
     @IBOutlet weak var topRightButton: UIButton!
     @IBOutlet weak var topLeftButton: UIButton!
     
+    @IBOutlet weak var rectangleView: UIImageView!
+    @IBOutlet weak var leftButtonView: UIImageView!
+    @IBOutlet weak var rightButtonView: UIImageView!
+    @IBOutlet weak var topLeftButtonView: UIImageView!
+    @IBOutlet weak var topRightButtonView: UIImageView!
+    
+    
     var upperYPosition = CGFloat()
     var downYPosition = CGFloat()
     
-    private func getPositionValues(up: inout CGFloat, down: inout CGFloat){
+    var bufferUpperYPos: CGFloat?
+    var bufferDownYPos: CGFloat?
+    // to avoid getPositionValues to be called several times, and at the same time not having upperYPos be a ?
+    
+    private func getPositionValues(up: inout CGFloat?, down: inout CGFloat?){
             up = rectangle.frame.origin.y
             down = leftButton.frame.origin.y
         }
@@ -49,11 +60,29 @@ class TestView: UIView, UIImagePickerControllerDelegate, UINavigationControllerD
         addSubview(contentView)
         contentView.frame = self.bounds
         contentView.autoresizingMask = [.flexibleHeight, .flexibleWidth]
-        getPositionValues(up: &upperYPosition, down: &downYPosition)
+        
+        let views = [rectangleView, leftButtonView, rightButtonView, topLeftButtonView, topRightButtonView]
+        let buttons = [rectangle, leftButton, rightButton, topLeftButton, topRightButton]
+        
+        for index in views.indices {
+            alignViewWithButton(view: views[index]!, button: buttons[index]!)
+            views[index]?.isHidden = true
+        }
+        
+        if bufferDownYPos == nil {
+            getPositionValues(up: &bufferUpperYPos, down: &bufferDownYPos)
+            upperYPosition = bufferUpperYPos!
+            downYPosition = bufferDownYPos!
+        }
+    }
+    
+    private func alignViewWithButton(view: UIImageView, button: UIButton) {
+        view.frame = button.frame
     }
 
     
     @IBAction func rightButtonTuched(_ sender: UIButton) {
+        NotificationCenter.default.post(name: NSNotification.Name(rawValue: "rightButton"), object: nil)
         print("Right Button touched")
     }
     @IBAction func rectangleTouched(_ sender: UIButton) {
@@ -61,17 +90,41 @@ class TestView: UIView, UIImagePickerControllerDelegate, UINavigationControllerD
         NotificationCenter.default.post(name: NSNotification.Name(rawValue: "rectangle"), object: nil)
     }
     @IBAction func leftButtonTouched(_ sender: UIButton) {
+        NotificationCenter.default.post(name: NSNotification.Name(rawValue: "leftButton"), object: nil)
         print("Left Button touched")
     }
     @IBAction func topRightButtonTouched(_ sender: UIButton) {
+        NotificationCenter.default.post(name: NSNotification.Name(rawValue: "topRightButton"), object: nil)
         print("Top Right Button touched")
     }
     @IBAction func topLeftButtonTouched(_ sender: UIButton) {
+        NotificationCenter.default.post(name: NSNotification.Name(rawValue: "topLeftButton"), object: nil)
         print("Top Left Button touched")
     }
     
 
-    
+    func check() {
+        if rectangle.isHidden { print("Rectangle hidden")}
+         if leftButton.isHidden { print("Left Button hidden")}
+         if rightButton.isHidden { print("Right Button hidden")}
+         if topLeftButton.isHidden { print("topLeftButton hidden")}
+         if topRightButton.isHidden { print("Top Right Button hidden")}
+        print("Rectangle:")
+        print(rectangle.frame.origin.x)
+        print(rectangle.frame.origin.y)
+        print("leftButton:")
+        print(leftButton.frame.origin.x)
+        print(leftButton.frame.origin.y)
+        print("rightButton:")
+        print(rightButton.frame.origin.x)
+        print(rightButton.frame.origin.y)
+        print("topLeftButton:")
+        print(topLeftButton.frame.origin.x)
+        print(topLeftButton.frame.origin.x)
+        print("topRightButton:")
+        print(topRightButton.frame.origin.x)
+        print(topRightButton.frame.origin.y)
+    }
     
     func shambles (from: layout, to: layout) {
         switch from {
@@ -86,6 +139,9 @@ class TestView: UIView, UIImagePickerControllerDelegate, UINavigationControllerD
                                 self.rectangle.frame.origin.y = self.downYPosition
                                 self.leftButton.frame.origin.y = self.upperYPosition
                                 self.rightButton.frame.origin.y = self.upperYPosition
+                                self.rectangleView.frame = self.rectangle.frame
+                                self.topLeftButtonView.frame = self.leftButton.frame
+                                self.topRightButtonView.frame = self.rightButton.frame
                 },
                                completion: nil
                 )
@@ -108,6 +164,12 @@ class TestView: UIView, UIImagePickerControllerDelegate, UINavigationControllerD
                                 self.topRightButton.frame.origin.y += 200
                                 self.rectangle.frame.origin.y = self.downYPosition
                                 self.rectangle.alpha = 0
+                                
+                                self.rectangleView.frame = self.rectangle.frame
+                                self.topLeftButtonView.frame = self.leftButton.frame
+                                self.topRightButtonView.frame = self.rightButton.frame
+                                self.topRightButtonView.frame = self.topRightButton.frame
+                                self.topLeftButtonView.frame = self.topLeftButton.frame
                 },
                                completion: { _ in
                                 self.rectangle.isHidden = true
@@ -123,6 +185,9 @@ class TestView: UIView, UIImagePickerControllerDelegate, UINavigationControllerD
                                 self.rectangle.frame.origin.y = self.upperYPosition
                                 self.leftButton.frame.origin.y = self.downYPosition
                                 self.rightButton.frame.origin.y = self.downYPosition
+                                self.rectangleView.frame = self.rectangle.frame
+                                self.topLeftButtonView.frame = self.leftButton.frame
+                                self.topRightButtonView.frame = self.rightButton.frame
                 },
                                completion: nil
                 )
@@ -137,6 +202,12 @@ class TestView: UIView, UIImagePickerControllerDelegate, UINavigationControllerD
                                 self.rightButton.frame.origin.y = self.downYPosition
                                 self.topRightButton.isHidden = false
                                 self.topLeftButton.isHidden = false
+                                
+                                self.rectangleView.frame = self.rectangle.frame
+                                self.topLeftButtonView.frame = self.leftButton.frame
+                                self.topRightButtonView.frame = self.rightButton.frame
+                                self.topRightButtonView.frame = self.topRightButton.frame
+                                self.topLeftButtonView.frame = self.topLeftButton.frame
                 },
                                completion: nil
                 )
@@ -152,6 +223,12 @@ class TestView: UIView, UIImagePickerControllerDelegate, UINavigationControllerD
                                 self.rectangle.isHidden = false
                                 self.leftButton.frame.origin.y = self.downYPosition
                                 self.rightButton.frame.origin.y = self.downYPosition
+                                
+                                self.rectangleView.frame = self.rectangle.frame
+                                self.topLeftButtonView.frame = self.leftButton.frame
+                                self.topRightButtonView.frame = self.rightButton.frame
+                                self.topRightButtonView.frame = self.topRightButton.frame
+                                self.topLeftButtonView.frame = self.topLeftButton.frame
                 },
                                completion: nil
                 )
@@ -164,6 +241,12 @@ class TestView: UIView, UIImagePickerControllerDelegate, UINavigationControllerD
                                 self.topLeftButton.isHidden = true
                                 self.leftButton.frame.origin.y = self.upperYPosition
                                 self.rightButton.frame.origin.y = self.upperYPosition
+                                
+                                self.rectangleView.frame = self.rectangle.frame
+                                self.topLeftButtonView.frame = self.leftButton.frame
+                                self.topRightButtonView.frame = self.rightButton.frame
+                                self.topRightButtonView.frame = self.topRightButton.frame
+                                self.topLeftButtonView.frame = self.topLeftButton.frame
                 },
                                completion: nil
                 )

@@ -19,6 +19,12 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavig
     }()
     
     lazy var rectangleNotificationName = NSNotification.Name(rawValue: "rectangle")
+    lazy var rightButtonNotificationName = NSNotification.Name(rawValue: "rightButton")
+    lazy var leftButtonNotificationName = NSNotification.Name(rawValue: "leftButton")
+    lazy var topRightButtonNotificationName = NSNotification.Name(rawValue: "topRightButton")
+    lazy var topLeftButtonNotificationName = NSNotification.Name(rawValue: "topLeftButton")
+    
+    lazy var currentImageViewToFill = UIImageView()
         
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -26,13 +32,41 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavig
         picker.delegate = self
         // Do any additional setup after loading the view, typically from a nib.
         
-        NotificationCenter.default.addObserver(self, selector: #selector(putPhotoInRectangle), name: rectangleNotificationName, object: nil)
-        
+        NotificationCenter.default.addObserver(self, selector: #selector(putPictureInRectangle), name: rectangleNotificationName, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(putPictureInRightButton), name: rightButtonNotificationName, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(putPictureInLeftButton), name: leftButtonNotificationName, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(putPictureInTopRightButton), name: topRightButtonNotificationName, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(putPictureInTopLeftButton), name: topLeftButtonNotificationName, object: nil)
     }
     
     
     @objc
-    func putPhotoInRectangle() {
+    func putPictureInRectangle() {
+        currentImageViewToFill = self.customView.rectangleView
+        choosePicture()
+    }
+    @objc
+    func putPictureInRightButton() {
+        currentImageViewToFill = self.customView.rightButtonView
+        choosePicture()
+    }
+    @objc
+    func putPictureInLeftButton() {
+        currentImageViewToFill = self.customView.leftButtonView
+        choosePicture()
+    }
+    @objc
+    func putPictureInTopRightButton() {
+        currentImageViewToFill = self.customView.topRightButtonView
+        choosePicture()
+    }
+    @objc
+    func putPictureInTopLeftButton() {
+        currentImageViewToFill = self.customView.topLeftButtonView
+        choosePicture()
+    }
+
+    func choosePicture() {
         if UIImagePickerController.isSourceTypeAvailable(.photoLibrary) {
             picker.sourceType = .photoLibrary
         }
@@ -51,28 +85,14 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavig
     
     func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [String : Any]) {
         if let photo = (info[UIImagePickerControllerEditedImage] ?? info[UIImagePickerControllerOriginalImage]) as? UIImage {
-            self.image.image = photo
-            self.customView.rectangle.setImage(photo, for: .normal)
+            self.currentImageViewToFill.isHidden = false
+            self.currentImageViewToFill.contentMode = .scaleAspectFill
+            self.currentImageViewToFill.layer.masksToBounds = true
+            self.currentImageViewToFill.clipsToBounds = true
+            self.currentImageViewToFill.image = photo
         }
         picker.presentingViewController?.dismiss(animated: true, completion: nil)
     }
-    
-    @IBOutlet weak var image: UIImageView! {
-        didSet {
-            image.layer.masksToBounds = true
-            image.clipsToBounds = true
-        }
-    }
-    
-    @IBAction func firstButton(_ sender: UIButton) {
-
-        if UIImagePickerController.isSourceTypeAvailable(.photoLibrary) {
-            picker.sourceType = .photoLibrary
-        }
-        present(picker, animated: true, completion: nil)
-    }
-
-    
     
     
     
@@ -95,11 +115,9 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavig
         currentLayout = .third
     }
     
-    let name = NSNotification.Name(rawValue: "rectangle")
-    
-    
-    
-
+    @IBAction func check(_ sender: UIButton) {
+        customView.check()
+    }
     
 }
 
