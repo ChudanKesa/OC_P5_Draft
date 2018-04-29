@@ -252,13 +252,12 @@ class TestView: UIView, UIImagePickerControllerDelegate, UINavigationControllerD
                                 self.rectangle.frame.origin.y = self.upperYPosition
                                 self.leftButton.frame.origin.y = self.downYPosition
                                 self.rightButton.frame.origin.y = self.downYPosition
-                                self.rectangleView.frame = self.rectangle.frame
-                                self.leftButtonView.frame = self.leftButton.frame
-                                self.rightButtonView.frame = self.rightButton.frame
+                                
+                                self.viewsToFollowButtons()
+                                self.hideViewIfButtonIs()
                 },
                                completion: nil
                 )
-                hideViewIfButtonIs()
             case .second:
                 break
             case .third:
@@ -272,10 +271,11 @@ class TestView: UIView, UIImagePickerControllerDelegate, UINavigationControllerD
                                 self.topLeftButton.alpha = 1
                                 
                                 self.viewsToFollowButtons()
+                                self.hideViewIfButtonIs()
                 },
                                completion: nil
                 )
-                hideViewIfButtonIs()
+
             }
         case .third:
             switch to {
@@ -286,16 +286,9 @@ class TestView: UIView, UIImagePickerControllerDelegate, UINavigationControllerD
                                 self.topRightButton.alpha = 0
                                 self.rectangle.frame.origin.y = self.upperYPosition
                                 self.rectangle.alpha = 1
-                                self.leftButton.frame.origin.y = self.downYPosition
-                                self.rightButton.frame.origin.y = self.downYPosition
-                                
-                                self.rectangleView.frame = self.rectangle.frame
-                                self.leftButtonView.frame = self.leftButton.frame
-                                self.rightButtonView.frame = self.rightButton.frame
-                                self.topRightButtonView.frame = self.topRightButton.frame
-                                self.topLeftButtonView.frame = self.topLeftButton.frame
-                                
-                                self.rectangleView.alpha = 1
+
+                                self.viewsToFollowButtons()
+                                self.hideViewIfButtonIs()
                 },
                                completion: nil
                 )
@@ -310,10 +303,10 @@ class TestView: UIView, UIImagePickerControllerDelegate, UINavigationControllerD
                                 self.rightButton.frame.origin.y = self.upperYPosition
                                 
                                 self.viewsToFollowButtons()
+                                self.hideViewIfButtonIs()
                 },
                                completion: nil
                 )
-                hideViewIfButtonIs()
             case .third:
                 break
             }
