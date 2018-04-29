@@ -25,7 +25,8 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavig
     lazy var topLeftButtonNotificationName = NSNotification.Name(rawValue: "topLeftButton")
     
     lazy var currentImageViewToFill = UIImageView()
-        
+    lazy var associatedButton = UIButton()
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -43,26 +44,31 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavig
     @objc
     func putPictureInRectangle() {
         currentImageViewToFill = self.customView.rectangleView
+        associatedButton = self.customView.rectangle
         choosePicture()
     }
     @objc
     func putPictureInRightButton() {
         currentImageViewToFill = self.customView.rightButtonView
+        associatedButton = self.customView.rightButton
         choosePicture()
     }
     @objc
     func putPictureInLeftButton() {
         currentImageViewToFill = self.customView.leftButtonView
+        associatedButton = self.customView.leftButton
         choosePicture()
     }
     @objc
     func putPictureInTopRightButton() {
         currentImageViewToFill = self.customView.topRightButtonView
+        associatedButton = self.customView.topRightButton
         choosePicture()
     }
     @objc
     func putPictureInTopLeftButton() {
         currentImageViewToFill = self.customView.topLeftButtonView
+        associatedButton = self.customView.topLeftButton
         choosePicture()
     }
 
@@ -85,11 +91,12 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavig
     
     func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [String : Any]) {
         if let photo = (info[UIImagePickerControllerEditedImage] ?? info[UIImagePickerControllerOriginalImage]) as? UIImage {
-            self.currentImageViewToFill.isHidden = false
+            self.currentImageViewToFill.alpha = 1
             self.currentImageViewToFill.contentMode = .scaleAspectFill
             self.currentImageViewToFill.layer.masksToBounds = true
             self.currentImageViewToFill.clipsToBounds = true
             self.currentImageViewToFill.image = photo
+            self.customView.setButtonStyle(button: self.associatedButton, style: self.customView.invisibleStyle)
         }
         picker.presentingViewController?.dismiss(animated: true, completion: nil)
     }

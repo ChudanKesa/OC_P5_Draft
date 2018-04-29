@@ -31,7 +31,7 @@
             <rect key="frame" x="0.0" y="0.0" width="300" height="300"/>
             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
             <subviews>
-                <button hidden="YES" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="NVO-hl-wVe" userLabel="Top Left Button">
+                <button opaque="NO" alpha="0.0" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="NVO-hl-wVe" userLabel="Top Left Button">
                     <rect key="frame" x="16" y="6" width="120" height="120"/>
                     <color key="backgroundColor" red="0.26434109550000001" green="0.51434147750000003" blue="0.87055837560000005" alpha="0.82534246580000004" colorSpace="custom" customColorSpace="sRGB"/>
                     <constraints>
@@ -46,7 +46,7 @@
                         <action selector="topLeftButtonTouched:" destination="-1" eventType="touchUpInside" id="d78-VU-4c1"/>
                     </connections>
                 </button>
-                <button hidden="YES" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="gKH-XJ-Vca" userLabel="Top Right Button">
+                <button opaque="NO" alpha="0.0" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="gKH-XJ-Vca" userLabel="Top Right Button">
                     <rect key="frame" x="164" y="6" width="120" height="120"/>
                     <color key="backgroundColor" red="0.26434109550000001" green="0.51434147750000003" blue="0.87055837560000005" alpha="0.82534246580000004" colorSpace="custom" customColorSpace="sRGB"/>
                     <constraints>
