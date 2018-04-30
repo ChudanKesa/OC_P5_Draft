@@ -48,7 +48,18 @@ class TestView: UIView, UIImagePickerControllerDelegate, UINavigationControllerD
     var topRightButtonStyle = ButtonStyle()
     var topLeftButtonStyle = ButtonStyle()
     
-    var invisibleStyle = ButtonStyle(color: UIColor(white: 1, alpha: 0), font: UIFont(name: "System", size: 0)!, text: "", textColor: UIColor(white: 1, alpha: 0))
+    
+    lazy var invisibleStyle: ButtonStyle = {
+        var style = ButtonStyle()
+        style.color = UIColor(white: 1, alpha: 0)
+        style.text = ""
+        style.textColor = UIColor(white: 1, alpha: 0)
+        guard let font = UIFont(name: "System", size: 0) else { return style }
+        style.font = font
+        return style
+    }()
+    
+    
     
     
     func reccordStyles() {
@@ -130,14 +141,10 @@ class TestView: UIView, UIImagePickerControllerDelegate, UINavigationControllerD
     }
     
 
-    func check() {
-        if rectangleView.image == nil {print("Works\n")}
-        
+    func check() {        
         print("Rectangle:")
         print(rectangle.frame.origin.x, rectangle.frame.origin.y)
         print("z.pos: \(rectangle.layer.zPosition), alhpa: \(rectangle.alpha), hidden: \(rectangle.isHidden), enabled: \(rectangle.isEnabled), state: \(rectangle.state)")
-        
-        
         
         print("\nleftButton:")
         print(leftButton.frame.origin.x, leftButton.frame.origin.y)
@@ -177,12 +184,6 @@ class TestView: UIView, UIImagePickerControllerDelegate, UINavigationControllerD
     }
     
     private func hideViewIfButtonIs() {
-//        if rectangle.alpha == 0 {rectangleView.alpha = 0}
-//        if leftButton.alpha == 0 {leftButtonView.alpha = 0}
-//        if rightButton.alpha == 0 {rightButtonView.alpha = 0}
-//        if topLeftButton.alpha == 0 {topLeftButtonView.alpha = 0}
-//        if topRightButton.alpha == 0 {topRightButtonView.alpha = 0}
-        
         let views = [rectangleView, leftButtonView, rightButtonView, topLeftButtonView, topRightButtonView]
         let buttons = [rectangle, leftButton, rightButton, topLeftButton, topRightButton]
         

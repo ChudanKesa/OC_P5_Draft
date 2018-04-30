@@ -126,5 +126,23 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavig
         customView.check()
     }
     
+    
+    @IBAction func share(_ sender: UIButton) {
+        guard let viewToShare = customView.toUIImage() else {
+            return
+        }
+        
+        let vc = UIActivityViewController(activityItems: [viewToShare], applicationActivities: [])
+        present(vc, animated: true)
+    }
 }
 
+extension UIView {
+    func toUIImage() -> UIImage? {
+        UIGraphicsBeginImageContextWithOptions(self.bounds.size, self.isOpaque, 0.0)
+        self.drawHierarchy(in: self.bounds, afterScreenUpdates: true)
+        guard let image = UIGraphicsGetImageFromCurrentImageContext() else { return nil }
+        UIGraphicsEndImageContext()
+        return image
+    }
+}
