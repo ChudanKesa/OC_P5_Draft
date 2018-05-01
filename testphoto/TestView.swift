@@ -42,6 +42,7 @@ class TestView: UIView, UIImagePickerControllerDelegate, UINavigationControllerD
     @IBOutlet weak var topLeftButtonView: UIImageView!
     @IBOutlet weak var topRightButtonView: UIImageView!
     
+    
     var rightButtonStyle = ButtonStyle()
     var leftButtonStyle = ButtonStyle()
     var rectangleStyle = ButtonStyle()
@@ -120,68 +121,25 @@ class TestView: UIView, UIImagePickerControllerDelegate, UINavigationControllerD
 
     
     @IBAction func rightButtonTuched(_ sender: UIButton) {
-        NotificationCenter.default.post(name: NSNotification.Name(rawValue: "rightButton"), object: nil)
-        print("Right Button touched")
+        sendNotification("rightButton")
     }
     @IBAction func rectangleTouched(_ sender: UIButton) {
-        print("Rectangle Button touched")
-        NotificationCenter.default.post(name: NSNotification.Name(rawValue: "rectangle"), object: nil)
+        sendNotification("rectangle")
     }
     @IBAction func leftButtonTouched(_ sender: UIButton) {
-        NotificationCenter.default.post(name: NSNotification.Name(rawValue: "leftButton"), object: nil)
-        print("Left Button touched")
+        sendNotification("leftButton")
     }
     @IBAction func topRightButtonTouched(_ sender: UIButton) {
-        NotificationCenter.default.post(name: NSNotification.Name(rawValue: "topRightButton"), object: nil)
-        print("Top Right Button touched")
+        sendNotification("topRightButton")
     }
     @IBAction func topLeftButtonTouched(_ sender: UIButton) {
-        NotificationCenter.default.post(name: NSNotification.Name(rawValue: "topLeftButton"), object: nil)
-        print("Top Left Button touched")
+        sendNotification("topLeftButton")
     }
     
-
-    func check() {        
-        print("Rectangle:")
-        print(rectangle.frame.origin.x, rectangle.frame.origin.y)
-        print("z.pos: \(rectangle.layer.zPosition), alhpa: \(rectangle.alpha), hidden: \(rectangle.isHidden), enabled: \(rectangle.isEnabled), state: \(rectangle.state)")
-        
-        print("\nleftButton:")
-        print(leftButton.frame.origin.x, leftButton.frame.origin.y)
-        print("z.pos: \(leftButton.layer.zPosition), alhpa: \(leftButton.alpha), hidden: \(leftButton.isHidden), enabled: \(leftButton.isEnabled), state: \(leftButton.state)")
-        
-        print("\nrightButton:")
-        print(rightButton.frame.origin.x, rightButton.frame.origin.y)
-        print("z.pos: \(rightButton.layer.zPosition), alhpa: \(rightButton.alpha), hidden: \(rightButton.isHidden), enabled: \(rightButton.isEnabled), state: \(rightButton.state)")
-        
-        print("\ntopLeftButton:")
-        print(topLeftButton.frame.origin.x, topLeftButton.frame.origin.y)
-        print("z.pos: \(topLeftButton.layer.zPosition), alhpa: \(topLeftButton.alpha), hidden: \(topLeftButton.isHidden), enabled: \(topLeftButton.isEnabled), state: \(topLeftButton.state)")
-        
-        print("\ntopRightButton:")
-        print(topRightButton.frame.origin.x, topRightButton.frame.origin.y)
-        print("z.pos: \(topRightButton.layer.zPosition), alhpa: \(topRightButton.alpha), hidden: \(topRightButton.isHidden), enabled: \(topRightButton.isEnabled), state: \(topRightButton.state)")
-        
-        print("\nrectangleView:")
-        print(rectangleView.frame.origin.x, rectangleView.frame.origin.y)
-        print("z.pos: \(rectangleView.layer.zPosition), alhpa: \(rectangleView.alpha), hidden: \(rectangleView.isHidden)")
-        
-        print("\nleftButtonView:")
-        print(leftButtonView.frame.origin.x, leftButtonView.frame.origin.y)
-        print("z.pos: \(leftButtonView.layer.zPosition), alhpa: \(leftButtonView.alpha), hidden: \(leftButtonView.isHidden)")
-        
-        print("\nrightButtonView:")
-        print(rightButtonView.frame.origin.x, rightButtonView.frame.origin.y)
-        print("z.pos: \(rightButtonView.layer.zPosition), alhpa: \(rightButtonView.alpha), hidden: \(rightButtonView.isHidden)")
-        
-        print("\ntopLeftButtonView:")
-        print(topLeftButtonView.frame.origin.x, topLeftButtonView.frame.origin.y)
-        print("z.pos: \(topLeftButtonView.layer.zPosition), alhpa: \(topLeftButtonView.alpha), hidden: \(topLeftButtonView.isHidden)")
-        
-        print("\ntopRightButtonView:")
-        print(topRightButtonView.frame.origin.x, topRightButtonView.frame.origin.y)
-        print("z.pos: \(topRightButtonView.layer.zPosition), alhpa: \(topRightButtonView.alpha), hidden: \(topRightButtonView.isHidden)")
+    private func sendNotification(_ name: String) {
+        NotificationCenter.default.post(name: NSNotification.Name(rawValue: name), object: nil)
     }
+    
     
     private func hideViewIfButtonIs() {
         let views = [rectangleView, leftButtonView, rightButtonView, topLeftButtonView, topRightButtonView]
@@ -312,6 +270,49 @@ class TestView: UIView, UIImagePickerControllerDelegate, UINavigationControllerD
                 break
             }
         }
+    }
+
+    
+    func check() {
+        print("Rectangle:")
+        print(rectangle.frame.origin.x, rectangle.frame.origin.y)
+        print("z.pos: \(rectangle.layer.zPosition), alhpa: \(rectangle.alpha), hidden: \(rectangle.isHidden), enabled: \(rectangle.isEnabled), state: \(rectangle.state)")
+        
+        print("\nleftButton:")
+        print(leftButton.frame.origin.x, leftButton.frame.origin.y)
+        print("z.pos: \(leftButton.layer.zPosition), alhpa: \(leftButton.alpha), hidden: \(leftButton.isHidden), enabled: \(leftButton.isEnabled), state: \(leftButton.state)")
+        
+        print("\nrightButton:")
+        print(rightButton.frame.origin.x, rightButton.frame.origin.y)
+        print("z.pos: \(rightButton.layer.zPosition), alhpa: \(rightButton.alpha), hidden: \(rightButton.isHidden), enabled: \(rightButton.isEnabled), state: \(rightButton.state)")
+        
+        print("\ntopLeftButton:")
+        print(topLeftButton.frame.origin.x, topLeftButton.frame.origin.y)
+        print("z.pos: \(topLeftButton.layer.zPosition), alhpa: \(topLeftButton.alpha), hidden: \(topLeftButton.isHidden), enabled: \(topLeftButton.isEnabled), state: \(topLeftButton.state)")
+        
+        print("\ntopRightButton:")
+        print(topRightButton.frame.origin.x, topRightButton.frame.origin.y)
+        print("z.pos: \(topRightButton.layer.zPosition), alhpa: \(topRightButton.alpha), hidden: \(topRightButton.isHidden), enabled: \(topRightButton.isEnabled), state: \(topRightButton.state)")
+        
+        print("\nrectangleView:")
+        print(rectangleView.frame.origin.x, rectangleView.frame.origin.y)
+        print("z.pos: \(rectangleView.layer.zPosition), alhpa: \(rectangleView.alpha), hidden: \(rectangleView.isHidden)")
+        
+        print("\nleftButtonView:")
+        print(leftButtonView.frame.origin.x, leftButtonView.frame.origin.y)
+        print("z.pos: \(leftButtonView.layer.zPosition), alhpa: \(leftButtonView.alpha), hidden: \(leftButtonView.isHidden)")
+        
+        print("\nrightButtonView:")
+        print(rightButtonView.frame.origin.x, rightButtonView.frame.origin.y)
+        print("z.pos: \(rightButtonView.layer.zPosition), alhpa: \(rightButtonView.alpha), hidden: \(rightButtonView.isHidden)")
+        
+        print("\ntopLeftButtonView:")
+        print(topLeftButtonView.frame.origin.x, topLeftButtonView.frame.origin.y)
+        print("z.pos: \(topLeftButtonView.layer.zPosition), alhpa: \(topLeftButtonView.alpha), hidden: \(topLeftButtonView.isHidden)")
+        
+        print("\ntopRightButtonView:")
+        print(topRightButtonView.frame.origin.x, topRightButtonView.frame.origin.y)
+        print("z.pos: \(topRightButtonView.layer.zPosition), alhpa: \(topRightButtonView.alpha), hidden: \(topRightButtonView.isHidden)")
     }
 }
 

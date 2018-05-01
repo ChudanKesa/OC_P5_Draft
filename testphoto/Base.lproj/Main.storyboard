@@ -108,6 +108,9 @@
                     </view>
                     <connections>
                         <outlet property="customView" destination="bbL-iz-uhk" id="OoN-pA-x1t"/>
+                        <outlet property="firstLayoutButton" destination="4My-gg-Qcc" id="dHN-Vd-EfJ"/>
+                        <outlet property="secondLayoutButton" destination="x8w-LS-AMK" id="tBv-fh-b89"/>
+                        <outlet property="thirdLayoutButton" destination="llt-Rf-xli" id="uoB-ZO-3Ye"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>
