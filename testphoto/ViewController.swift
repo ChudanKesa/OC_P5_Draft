@@ -18,6 +18,8 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavig
         return picker
     }()
     
+    var currentDeviceOrientation = UIDeviceOrientation.unknown
+    
     lazy var rectangleNotificationName = NSNotification.Name(rawValue: "rectangle")
     lazy var rightButtonNotificationName = NSNotification.Name(rawValue: "rightButton")
     lazy var leftButtonNotificationName = NSNotification.Name(rawValue: "leftButton")
@@ -28,13 +30,29 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavig
     lazy var associatedButton = UIButton()
     
 
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        
+        
+        UIDevice.current.beginGeneratingDeviceOrientationNotifications()
+    }
+    
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        
+        var alreadySet = false
+        let subviews = self.view.subviews
+        
+        for subview in subviews.indices {
+            if subviews[subview] == firstLayoutButtonView { alreadySet = true }
+        }
+        if !alreadySet { setButtonsViews() }
+    }
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        setButtonsViews()
-        
-        self.view.addSubview(firstLayoutButtonView)
+
         
         picker.delegate = self
         // Do any additional setup after loading the view, typically from a nib.
@@ -48,6 +66,48 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavig
         NotificationCenter.default.addObserver(self, selector: #selector(putPictureInLeftButton), name: leftButtonNotificationName, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(putPictureInTopRightButton), name: topRightButtonNotificationName, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(putPictureInTopLeftButton), name: topLeftButtonNotificationName, object: nil)
+        
+        NotificationCenter.default.addObserver(self, selector: #selector(deviceDidRotate(notification:)), name: Notification.Name.UIDeviceOrientationDidChange, object: nil)
+    }
+    
+    
+    var isLandscape = false {
+        didSet {
+            adaptButtonsViewsToPhoneRotation()
+            customView.shambles(from: TestView.layout.first, to: self.currentLayout, animated: false)
+        }
+    }
+    var isPortrait = false {
+        didSet {
+            adaptButtonsViewsToPhoneRotation()
+            customView.shambles(from: TestView.layout.first, to: self.currentLayout, animated: false)
+        }
+    }
+    
+    private func adaptButtonsViewsToPhoneRotation() {
+        firstLayoutButtonView.frame = firstLayoutButton.frame
+        secondLayoutButtonView.frame = secondLayoutButton.frame
+        thirdLayoutButtonView.frame = thirdLayoutButton.frame
+        switch currentLayout {
+        case .first:
+            selectedSign.frame = firstLayoutButtonView.frame
+        case .second:
+            selectedSign.frame = secondLayoutButtonView.frame
+        case .third:
+            selectedSign.frame = thirdLayoutButtonView.frame
+        }
+    }
+    
+    @objc
+    func deviceDidRotate(notification: Notification) {
+        self.currentDeviceOrientation = UIDevice.current.orientation
+        // Ignore changes in device orientation if unknown, face up, or face down.
+        if !UIDeviceOrientationIsValidInterfaceOrientation(currentDeviceOrientation) {
+            return;
+        }
+        
+        self.isLandscape = UIDeviceOrientationIsLandscape(currentDeviceOrientation);
+        self.isPortrait = UIDeviceOrientationIsPortrait(currentDeviceOrientation);
     }
     
     enum direction: String {
@@ -83,8 +143,18 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavig
                     translationX = movement.x
                 }
                 
-                if movement.y < -15 {
-                    customView.backgroundColor = #colorLiteral(red: 0.4666666687, green: 0.7647058964, blue: 0.2666666806, alpha: 1)
+                if isPortrait {
+                    if movement.y < -50 {
+                        customView.backgroundColor = #colorLiteral(red: 0.4666666687, green: 0.7647058964, blue: 0.2666666806, alpha: 1)
+                    } else {
+                        customView.backgroundColor = #colorLiteral(red: 0.7005076142, green: 0.7005076142, blue: 0.7005076142, alpha: 0.4212328767)
+                    }
+                } else if isLandscape {
+                    if movement.x < -50 {
+                        customView.backgroundColor = #colorLiteral(red: 0.4666666687, green: 0.7647058964, blue: 0.2666666806, alpha: 1)
+                    } else {
+                        customView.backgroundColor = #colorLiteral(red: 0.7005076142, green: 0.7005076142, blue: 0.7005076142, alpha: 0.4212328767)
+                    }
                 }
                 
                 UIView.animate(withDuration: 0.2, animations: {
@@ -94,9 +164,16 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavig
             }
             
         case .ended, .cancelled:
-            if movement.y < -15 {
-                actuallyShare()
+            if isPortrait {
+                if movement.y < -50 {
+                    share()
+                }
+            } else if isLandscape {
+                if movement.x < -50 {
+                    share()
+                }
             }
+            
             UIView.animate(withDuration: 0.3, animations: {self.customView.transform = .identity})
             orientation = .undefined
         default:
@@ -183,6 +260,7 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavig
     var selectedSign = UIImageView()
     
     private func setButtonsViews() {
+        
         self.view.addSubview(firstLayoutButtonView)
         self.view.addSubview(secondLayoutButtonView)
         self.view.addSubview(thirdLayoutButtonView)
@@ -199,6 +277,7 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavig
         firstLayoutButtonView.frame = firstLayoutButton.frame
         secondLayoutButtonView.frame = secondLayoutButton.frame
         thirdLayoutButtonView.frame = thirdLayoutButton.frame
+
         
         customView.setButtonStyle(button: firstLayoutButton, style: customView.invisibleStyle)
         customView.setButtonStyle(button: secondLayoutButton, style: customView.invisibleStyle)
@@ -229,19 +308,19 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavig
     lazy var currentLayout = TestView.layout.first
     
     @IBAction func firstLayoutButtonPushed(_ sender: UIButton) {
-        customView.shambles(from: currentLayout, to: .first)
+        customView.shambles(from: currentLayout, to: .first, animated: true)
         currentLayout = .first
         selectedSign.frame = firstLayoutButton.frame
     }
     
     @IBAction func secondLayoutButtonPushed(_ sender: UIButton) {
-        customView.shambles(from: currentLayout, to: .second)
+        customView.shambles(from: currentLayout, to: .second, animated: true)
         currentLayout = .second
         selectedSign.frame = secondLayoutButton.frame
     }
     
     @IBAction func thirdLayoutButtonPushed(_ sender: UIButton) {
-        customView.shambles(from: currentLayout, to: .third)
+        customView.shambles(from: currentLayout, to: .third, animated: true)
         currentLayout = .third
         selectedSign.frame = thirdLayoutButton.frame
     }
@@ -250,12 +329,10 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavig
         customView.check()
     }
     
+
     
-    @IBAction func share(_ sender: UIButton) {
-        actuallyShare()
-    }
-    
-    private func actuallyShare() {
+    private func share() {
+        customView.backgroundColor = #colorLiteral(red: 0.7005076142, green: 0.7005076142, blue: 0.7005076142, alpha: 0.4212328767)
         guard let viewToShare = customView.toUIImage() else {
             return
         }

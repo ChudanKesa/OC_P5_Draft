@@ -84,13 +84,19 @@ class TestView: UIView, UIImagePickerControllerDelegate, UINavigationControllerD
     var upperYPosition = CGFloat()
     var downYPosition = CGFloat()
     
+    // MARK: to be deleted when better way to handle problem is found
+    var topRightViewXPosition = CGFloat()
+    
     var bufferUpperYPos: CGFloat?
     var bufferDownYPos: CGFloat?
+    
+    var bufferTopRightViewXPosition: CGFloat?
     // to avoid getPositionValues to be called several times, and at the same time not having upperYPos be a ?
     
-    private func getPositionValues(up: inout CGFloat?, down: inout CGFloat?){
+    private func getPositionValues(up: inout CGFloat?, down: inout CGFloat?, right: inout CGFloat?){
             up = rectangle.frame.origin.y
             down = leftButton.frame.origin.y
+            right = topRightButton.frame.origin.x
         }
     
     private func commonInit() {
@@ -110,9 +116,10 @@ class TestView: UIView, UIImagePickerControllerDelegate, UINavigationControllerD
         viewsToFollowButtons()
         
         if bufferDownYPos == nil {
-            getPositionValues(up: &bufferUpperYPos, down: &bufferDownYPos)
+            getPositionValues(up: &bufferUpperYPos, down: &bufferDownYPos, right: &bufferTopRightViewXPosition)
             upperYPosition = bufferUpperYPos!
             downYPosition = bufferDownYPos!
+            topRightViewXPosition = bufferTopRightViewXPosition!
         }
         
         reccordStyles()
@@ -146,7 +153,15 @@ class TestView: UIView, UIImagePickerControllerDelegate, UINavigationControllerD
         let buttons = [rectangle, leftButton, rightButton, topLeftButton, topRightButton]
         
         for index in views.indices {
-            views[index]!.alpha = buttons[index]!.alpha
+            if views[index] != nil && buttons[index] != nil {
+                if views[index]!.image == nil {
+                    views[index]!.alpha = 0
+                } else if views[index]!.image != nil {
+                    views[index]!.alpha = buttons[index]!.alpha
+                }
+            } else {
+                print("**** Error getting views or buttons.")
+            }
         }
     }
     
@@ -159,115 +174,189 @@ class TestView: UIView, UIImagePickerControllerDelegate, UINavigationControllerD
         }
     }
     
-    func shambles (from: layout, to: layout) {
-        switch from {
-        case .first:
-            switch to {
+    func shambles (from: layout, to: layout, animated: Bool) {
+        if animated {
+            switch from {
             case .first:
-                break
+                switch to {
+                case .first:
+                    break
+                case .second:
+                    
+                    UIView.animate(withDuration: 1.0,
+                                   animations: {
+                                    self.rectangle.frame.origin.y = self.downYPosition
+                                    self.leftButton.frame.origin.y = self.upperYPosition
+                                    self.rightButton.frame.origin.y = self.upperYPosition
+                                    self.viewsToFollowButtons()
+                                    self.hideViewIfButtonIs()
+                    },
+                                   completion: nil
+                    )
+                case .third:
+                    topLeftButton.alpha = 0
+                    topLeftButton.frame.origin.x -= 50
+                    topLeftButton.frame.origin.y -= 200
+                    topRightButton.alpha = 0
+                    topRightButton.frame.origin.x += 50
+                    topRightButton.frame.origin.y -= 200
+                    viewsToFollowButtons()
+                    hideViewIfButtonIs()
+                    UIView.animate(withDuration: 1.0,
+                                   animations: {
+                                    self.topLeftButton.alpha = 1
+                                    self.topLeftButton.frame.origin.x += 50
+                                    self.topLeftButton.frame.origin.y += 200
+                                    self.topRightButton.alpha = 1
+                                    self.topRightButton.frame.origin.x -= 50
+                                    self.topRightButton.frame.origin.y += 200
+                                    self.rectangle.frame.origin.y = self.downYPosition
+                                    self.rectangle.alpha = 0
+                                    
+                                    self.viewsToFollowButtons()
+                                    self.hideViewIfButtonIs()
+                    },
+                                   completion: nil
+                    )
+                }
             case .second:
-
-                UIView.animate(withDuration: 1.0,
-                               animations: {
-                                self.rectangle.frame.origin.y = self.downYPosition
-                                self.leftButton.frame.origin.y = self.upperYPosition
-                                self.rightButton.frame.origin.y = self.upperYPosition
-                                self.viewsToFollowButtons()
-                                self.hideViewIfButtonIs()
-                },
-                               completion: nil
-                )
+                switch to {
+                case .first:
+                    UIView.animate(withDuration: 1.0,
+                                   animations: {
+                                    self.rectangle.frame.origin.y = self.upperYPosition
+                                    self.leftButton.frame.origin.y = self.downYPosition
+                                    self.rightButton.frame.origin.y = self.downYPosition
+                                    
+                                    self.viewsToFollowButtons()
+                                    self.hideViewIfButtonIs()
+                    },
+                                   completion: nil
+                    )
+                case .second:
+                    break
+                case .third:
+                    UIView.animate(withDuration: 1.0,
+                                   animations: {
+                                    self.rectangle.frame.origin.y = self.upperYPosition
+                                    self.rectangle.alpha = 0
+                                    self.leftButton.frame.origin.y = self.downYPosition
+                                    self.rightButton.frame.origin.y = self.downYPosition
+                                    self.topRightButton.alpha = 1
+                                    self.topLeftButton.alpha = 1
+                                    
+                                    self.viewsToFollowButtons()
+                                    self.hideViewIfButtonIs()
+                    },
+                                   completion: nil
+                    )
+                    
+                }
             case .third:
-                topLeftButton.alpha = 0
-                topLeftButton.frame.origin.x -= 50
-                topLeftButton.frame.origin.y -= 200
-                topRightButton.alpha = 0
-                topRightButton.frame.origin.x += 50
-                topRightButton.frame.origin.y -= 200
-                viewsToFollowButtons()
-                hideViewIfButtonIs()
-                UIView.animate(withDuration: 1.0,
-                               animations: {
-                                self.topLeftButton.alpha = 1
-                                self.topLeftButton.frame.origin.x += 50
-                                self.topLeftButton.frame.origin.y += 200
-                                self.topRightButton.alpha = 1
-                                self.topRightButton.frame.origin.x -= 50
-                                self.topRightButton.frame.origin.y += 200
-                                self.rectangle.frame.origin.y = self.downYPosition
-                                self.rectangle.alpha = 0
-                                
-                                self.viewsToFollowButtons()
-                                self.hideViewIfButtonIs()
-                },
-                               completion: nil
-                )
+                switch to {
+                case .first:
+                    UIView.animate(withDuration: 1.0,
+                                   animations: {
+                                    self.topLeftButton.alpha = 0
+                                    self.topRightButton.alpha = 0
+                                    self.rectangle.frame.origin.y = self.upperYPosition
+                                    self.rectangle.alpha = 1
+                                    
+                                    self.viewsToFollowButtons()
+                                    self.hideViewIfButtonIs()
+                    },
+                                   completion: nil
+                    )
+                case .second:
+                    UIView.animate(withDuration: 1.0,
+                                   animations: {
+                                    self.rectangle.frame.origin.y = self.downYPosition
+                                    self.rectangle.alpha = 1
+                                    self.topRightButton.alpha = 0
+                                    self.topLeftButton.alpha = 0
+                                    self.leftButton.frame.origin.y = self.upperYPosition
+                                    self.rightButton.frame.origin.y = self.upperYPosition
+                                    
+                                    self.viewsToFollowButtons()
+                                    self.hideViewIfButtonIs()
+                    },
+                                   completion: nil
+                    )
+                case .third:
+                    break
+                }
             }
-        case .second:
-            switch to {
+        } else {
+            switch from {
             case .first:
-                UIView.animate(withDuration: 1.0,
-                               animations: {
-                                self.rectangle.frame.origin.y = self.upperYPosition
-                                self.leftButton.frame.origin.y = self.downYPosition
-                                self.rightButton.frame.origin.y = self.downYPosition
-                                
-                                self.viewsToFollowButtons()
-                                self.hideViewIfButtonIs()
-                },
-                               completion: nil
-                )
+                switch to {
+                case .first:
+                    break
+                case .second:
+                                    self.rectangle.frame.origin.y = self.downYPosition
+                                    self.leftButton.frame.origin.y = self.upperYPosition
+                                    self.rightButton.frame.origin.y = self.upperYPosition
+                                    self.viewsToFollowButtons()
+                                    self.hideViewIfButtonIs()
+                case .third:
+                                    self.topLeftButton.alpha = 1
+                                    self.topLeftButton.frame.origin.y = self.upperYPosition
+                                    self.topRightButton.alpha = 1
+                                    self.topRightButton.frame.origin.y = self.upperYPosition
+                                    self.rectangle.frame.origin.y = self.downYPosition
+                                    topRightButton.frame.origin.x = topRightViewXPosition
+                                    self.rectangle.alpha = 0
+                                    
+                                    self.viewsToFollowButtons()
+                                    self.hideViewIfButtonIs()
+                }
             case .second:
-                break
+                switch to {
+                case .first:
+                                    self.rectangle.frame.origin.y = self.upperYPosition
+                                    self.leftButton.frame.origin.y = self.downYPosition
+                                    self.rightButton.frame.origin.y = self.downYPosition
+                                    
+                                    self.viewsToFollowButtons()
+                                    self.hideViewIfButtonIs()
+                case .second:
+                    break
+                case .third:
+                                    self.rectangle.frame.origin.y = self.upperYPosition
+                                    self.rectangle.alpha = 0
+                                    self.leftButton.frame.origin.y = self.downYPosition
+                                    self.rightButton.frame.origin.y = self.downYPosition
+                                    self.topRightButton.alpha = 1
+                                    self.topLeftButton.alpha = 1
+                                    topRightButton.frame.origin.x = topRightViewXPosition
+                                    
+                                    self.viewsToFollowButtons()
+                                    self.hideViewIfButtonIs()
+                }
             case .third:
-                UIView.animate(withDuration: 1.0,
-                               animations: {
-                                self.rectangle.frame.origin.y = self.upperYPosition
-                                self.rectangle.alpha = 0
-                                self.leftButton.frame.origin.y = self.downYPosition
-                                self.rightButton.frame.origin.y = self.downYPosition
-                                self.topRightButton.alpha = 1
-                                self.topLeftButton.alpha = 1
-                                
-                                self.viewsToFollowButtons()
-                                self.hideViewIfButtonIs()
-                },
-                               completion: nil
-                )
+                switch to {
+                case .first:
+                                    self.topLeftButton.alpha = 0
+                                    self.topRightButton.alpha = 0
+                                    self.rectangle.frame.origin.y = self.upperYPosition
+                                    self.rectangle.alpha = 1
+                                    
+                                    self.viewsToFollowButtons()
+                                    self.hideViewIfButtonIs()
 
-            }
-        case .third:
-            switch to {
-            case .first:
-                UIView.animate(withDuration: 1.0,
-                               animations: {
-                                self.topLeftButton.alpha = 0
-                                self.topRightButton.alpha = 0
-                                self.rectangle.frame.origin.y = self.upperYPosition
-                                self.rectangle.alpha = 1
-
-                                self.viewsToFollowButtons()
-                                self.hideViewIfButtonIs()
-                },
-                               completion: nil
-                )
-            case .second:
-                UIView.animate(withDuration: 1.0,
-                               animations: {
-                                self.rectangle.frame.origin.y = self.downYPosition
-                                self.rectangle.alpha = 1
-                                self.topRightButton.alpha = 0
-                                self.topLeftButton.alpha = 0
-                                self.leftButton.frame.origin.y = self.upperYPosition
-                                self.rightButton.frame.origin.y = self.upperYPosition
-                                
-                                self.viewsToFollowButtons()
-                                self.hideViewIfButtonIs()
-                },
-                               completion: nil
-                )
-            case .third:
-                break
+                case .second:
+                                    self.rectangle.frame.origin.y = self.downYPosition
+                                    self.rectangle.alpha = 1
+                                    self.topRightButton.alpha = 0
+                                    self.topLeftButton.alpha = 0
+                                    self.leftButton.frame.origin.y = self.upperYPosition
+                                    self.rightButton.frame.origin.y = self.upperYPosition
+                                    
+                                    self.viewsToFollowButtons()
+                                    self.hideViewIfButtonIs()
+                case .third:
+                    break
+                }
             }
         }
     }
